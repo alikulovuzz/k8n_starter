@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    triggers {
+        // Har 5 daqiqada Git reposini tekshiradi, oʼzgarish boʼlsa build ishga tushadi
+        pollSCM('H/5 * * * *')
+    }
+
     environment {
         APP_NAME = "k3s-api"
         IMAGE_NAME = "${APP_NAME}:latest"
