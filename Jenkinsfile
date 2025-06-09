@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/azamatdev/k3s-api.git' // o'zingizni repo
+                git 'https://github.com/alikulovuzz/k8n_starter.git' // o'zingizni repo
             }
         }
 
