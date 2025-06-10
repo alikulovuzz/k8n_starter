@@ -1,4 +1,3 @@
-# deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,11 +7,6 @@ spec:
   selector:
     matchLabels:
       app: k3s-api
-  resources:
-    requests:
-      cpu: 100m
-    limits:
-      cpu: 200m
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -24,8 +18,13 @@ spec:
         app: k3s-api
     spec:
       containers:
-      - name: k3s-api
-        image: k3s-api:latest           # placeholder; will be overridden by kubectl set image
-        imagePullPolicy: IfNotPresent   # safe with immutable tags
-        ports:
-        - containerPort: 3000
+        - name: k3s-api
+          image: k3s-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          resources:                         # ← bu yerga ko‘chiriladi
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 200m
