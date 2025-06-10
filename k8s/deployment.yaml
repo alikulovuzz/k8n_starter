@@ -8,6 +8,11 @@ spec:
   selector:
     matchLabels:
       app: k3s-api
+  resources:
+    requests:
+      cpu: 100m
+    limits:
+      cpu: 200m
   strategy:
     type: RollingUpdate
     rollingUpdate:
