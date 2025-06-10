@@ -12,7 +12,7 @@ pipeline {
     KUBECONFIG = '/var/lib/jenkins/.kube/config'
     
     // Email configuration
-    EMAIL_RECIPIENTS = 'your-email@example.com,team@example.com'
+    EMAIL_RECIPIENTS = 'aliqulov.azamat@list.ru,cyberpark771@gmail.com'
     EMAIL_SUBJECT_SUCCESS = "✅ ${APP_NAME} Build #${BUILD_NUMBER} - SUCCESS"
     EMAIL_SUBJECT_FAILURE = "❌ ${APP_NAME} Build #${BUILD_NUMBER} - FAILED"
   }
