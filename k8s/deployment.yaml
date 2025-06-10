@@ -1,3 +1,4 @@
+# deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,6 +8,11 @@ spec:
   selector:
     matchLabels:
       app: k3s-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -14,7 +20,7 @@ spec:
     spec:
       containers:
       - name: k3s-api
-        image: k3s-api:latest
-        imagePullPolicy: Never
+        image: k3s-api:latest           # placeholder; will be overridden by kubectl set image
+        imagePullPolicy: IfNotPresent   # safe with immutable tags
         ports:
         - containerPort: 3000

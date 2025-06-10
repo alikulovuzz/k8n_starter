@@ -3,11 +3,11 @@ kind: Service
 metadata:
   name: k3s-api-service
 spec:
-  type: NodePort              # qo'shdik
+  type: NodePort
   selector:
     app: k3s-api
   ports:
     - protocol: TCP
       port: 80
       targetPort: 3000
-      nodePort: 31000         # qo'shdik, 30000–32767 oralig‘idan tanlang
+      nodePort: 31000

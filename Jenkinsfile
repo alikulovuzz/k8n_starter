@@ -1,47 +1,57 @@
 pipeline {
-    agent any
+  agent any
 
-    triggers {
-        // Har 5 daqiqada Git reposini tekshiradi, oʼzgarish boʼlsa build ishga tushadi
-        pollSCM('H/1 * * * *')
+  triggers {
+    // every 5 minutes
+    pollSCM('H/5 * * * *')
+  }
+
+  environment {
+    APP_NAME   = 'k3s-api'
+    DEPLOY_TAG = "${APP_NAME}:${BUILD_NUMBER}"
+    TARBALL    = "${APP_NAME}-${BUILD_NUMBER}.tar"
+    KUBECONFIG = '/var/lib/jenkins/.kube/config'
+  }
+
+  stages {
+    stage('Clone') {
+      steps {
+        git 'https://github.com/alikulovuzz/k8n_starter.git'
+      }
     }
 
-    environment {
-        APP_NAME = "k3s-api"
-        IMAGE_NAME = "${APP_NAME}:latest"
-        TARBALL = "${APP_NAME}.tar"
+    stage('Build') {
+      steps {
+        sh "docker build -t ${DEPLOY_TAG} ."
+      }
     }
 
-    stages {
-        stage('Clone') {
-            steps {
-                git 'https://github.com/alikulovuzz/k8n_starter.git' // o'zingizni repo
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t $IMAGE_NAME .'
-            }
-        }
-
-        stage('Export as tar') {
-            steps {
-                sh 'docker save $IMAGE_NAME -o $TARBALL'
-            }
-        }
-
-        stage('Import into k3s') {
-            steps {
-                sh 'k3s ctr images import $TARBALL'
-            }
-        }
-
-        stage('Deploy to K3s') {
-            steps {
-                sh 'kubectl apply -f /home/azamat/k8n_starter/k8s/deployment.yaml'
-                sh 'kubectl apply -f /home/azamat/k8n_starter/k8s/service.yaml'
-            }
-        }
+    stage('Export') {
+      steps {
+        sh "docker save ${DEPLOY_TAG} -o ${TARBALL}"
+      }
     }
+
+    stage('Import into k3s') {
+      steps {
+        sh "sudo k3s ctr images import ${TARBALL}"
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        // Patch Deployment to point at the new tag (triggers rolling update)
+        sh "sudo kubectl --kubeconfig=${KUBECONFIG} set image deployment/${APP_NAME} ${APP_NAME}=${DEPLOY_TAG}"
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "✅ Deployed ${DEPLOY_TAG} to k3s!"
+    }
+    failure {
+      echo "❌ Pipeline failed – check console output."
+    }
+  }
 }
