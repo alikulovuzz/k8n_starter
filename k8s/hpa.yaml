@@ -15,4 +15,4 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 50  # 50% dan oshsa yangi pod
+          averageUtilization: 40  # 50% dan oshsa yangi pod
