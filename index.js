@@ -4,7 +4,7 @@ const port = 3000;
 
 // Asosiy endpoint
 app.get('/', (req, res) => {
-  res.send('✅ Hello from Node.js HPA test! yangilanish');
+  res.send('✅ Hello from Node.js HPA test! yangilanish1');
 });
 
 // Yuklaydigan endpoint
