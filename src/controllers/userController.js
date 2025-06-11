@@ -1,71 +1,63 @@
 const userService = require('../services/userService');
+const { success, error } = require('../utils/responseHandler');
 
 class UserController {
   async getAllUsers(req, res) {
     try {
       const users = await userService.getAllUsers();
-      res.json(users);
-    } catch (error) {
-      res.status(500).json({ message: 'Foydalanuvchilarni olishda xatolik' });
+      success(res, 200, 'Foydalanuvchilar ro\'yxati', users);
+    } catch (err) {
+      error(res, 500, err.message);
     }
   }
 
   async createUser(req, res) {
     try {
-      const validationErrors = userService.validateUser(req.body);
-      if (validationErrors.length > 0) {
-        return res.status(400).json({ errors: validationErrors });
+      const user = await userService.createUser(req.body);
+      success(res, 201, 'Foydalanuvchi yaratildi', user);
+    } catch (err) {
+      if (err.code === 11000) { // MongoDB duplicate key error
+        return error(res, 400, 'Bu email allaqachon mavjud');
       }
-
-      const newUser = await userService.createUser(req.body);
-      res.status(201).json(newUser);
-    } catch (error) {
-      if (error.message === 'Email already exists') {
-        return res.status(409).json({ message: 'Bu email allaqachon mavjud' });
-      }
-      res.status(500).json({ message: 'Foydalanuvchi yaratishda xatolik' });
+      console.log(err);
+      error(res, 400, err.message);
     }
   }
 
   async updateUser(req, res) {
     try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: 'Noto\'g\'ri ID formati' });
+      const user = await userService.updateUser(req.params.id, req.body);
+      
+      if (!user) {
+        return error(res, 404, 'Foydalanuvchi topilmadi');
       }
 
-      const validationErrors = userService.validateUser(req.body);
-      if (validationErrors.length > 0) {
-        return res.status(400).json({ errors: validationErrors });
+      success(res, 200, 'Foydalanuvchi yangilandi', user);
+    } catch (err) {
+      if (err.message === 'User not found') {
+        return error(res, 404, 'Foydalanuvchi topilmadi');
       }
-
-      const updatedUser = await userService.updateUser(id, req.body);
-      res.json(updatedUser);
-    } catch (error) {
-      if (error.message === 'User not found') {
-        return res.status(404).json({ message: 'Foydalanuvchi topilmadi' });
+      if (err.message === 'Email already exists') {
+        return error(res, 400, 'Bu email allaqachon mavjud');
       }
-      if (error.message === 'Email already exists') {
-        return res.status(409).json({ message: 'Bu email allaqachon mavjud' });
-      }
-      res.status(500).json({ message: 'Foydalanuvchini yangilashda xatolik' });
+      error(res, 400, err.message);
     }
   }
 
   async deleteUser(req, res) {
     try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: 'Noto\'g\'ri ID formati' });
+      const user = await userService.deleteUser(req.params.id);
+      
+      if (!user) {
+        return error(res, 404, 'Foydalanuvchi topilmadi');
       }
 
-      const deletedUser = await userService.deleteUser(id);
-      res.json({ message: 'Foydalanuvchi o\'chirildi', user: deletedUser });
-    } catch (error) {
-      if (error.message === 'User not found') {
-        return res.status(404).json({ message: 'Foydalanuvchi topilmadi' });
+      success(res, 200, 'Foydalanuvchi o\'chirildi', user);
+    } catch (err) {
+      if (err.message === 'User not found') {
+        return error(res, 404, 'Foydalanuvchi topilmadi');
       }
-      res.status(500).json({ message: 'Foydalanuvchini o\'chirishda xatolik' });
+      error(res, 500, err.message);
     }
   }
 }

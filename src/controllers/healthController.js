@@ -1,7 +1,12 @@
+const { success } = require('../utils/responseHandler');
+
 class HealthController {
-  async checkHealth(req, res) {
-    res.send('✅ Hello from Node.js HPA test!');
+  check(req, res) {
+    success(res, 200, 'Server is running', {
+      timestamp: new Date(),
+      uptime: process.uptime()
+    });
   }
 }
 
-module.exports = new HealthController(); 
+module.exports = new HealthController();

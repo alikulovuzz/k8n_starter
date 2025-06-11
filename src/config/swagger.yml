@@ -5,7 +5,7 @@ info:
   description: Node.js HPA Test Application API documentation
 
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:3000/api/v1
     description: Local development server
 
 components:
@@ -44,7 +44,7 @@ components:
           example: "Xatolik yuz berdi"
 
 paths:
-  /:
+  /health:
     get:
       summary: Health check endpoint
       responses:
@@ -55,27 +55,6 @@ paths:
               schema:
                 type: string
                 example: "✅ Hello from Node.js HPA test!"
-
-  /load:
-    get:
-      summary: CPU load test endpoint
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: CPU load test completed
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "🌀 CPU load finished (5s)"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
   /auth/login:
     post:
       summary: Login to get JWT token
@@ -127,7 +106,7 @@ paths:
     post:
       summary: Create a new user
       security:
-        - BearerAuth: []
+        - x-access-token: []
       requestBody:
         required: true
         content:
@@ -145,6 +124,9 @@ paths:
                 email:
                   type: string
                   example: "john@example.com"
+                password:
+                  type: string
+                  example: "password123"
                 phone:
                   type: string
                   example: "+998901234567"
@@ -177,7 +159,7 @@ paths:
     put:
       summary: Update a user
       security:
-        - BearerAuth: []
+        - x-access-token: []
       parameters:
         - name: id
           in: path
@@ -237,7 +219,7 @@ paths:
     delete:
       summary: Delete a user
       security:
-        - BearerAuth: []
+        - x-access-token: []
       parameters:
         - name: id
           in: path
