@@ -24,6 +24,15 @@ pipeline {
       }
     }
     
+    stage('Test') {
+      steps {
+        script {
+          sh 'docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit'
+          sh 'docker-compose -f docker-compose.test.yml down -v'
+        }
+      }
+    }
+    
     stage('Build') {
       steps {
         sh "docker build -t ${DEPLOY_TAG} ."
