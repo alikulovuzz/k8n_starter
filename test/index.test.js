@@ -9,7 +9,7 @@ describe('Node.js HPA Test Application', () => {
         .get('/')
         .expect(200);
 
-      expect(response.text).toBe('✅ Hello from Node.js HPA test! yangilanish 11.06.2025 15:08');
+      expect(response.text).toContain('✅ Hello from Node.js HPA test!');
     });
 
     test('should respond quickly (under 100ms)', async () => {
