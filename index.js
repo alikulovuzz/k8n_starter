@@ -54,7 +54,7 @@ function validateUser(userData) {
 
 // Routes
 app.get('/', (req, res) => {
-  res.send('✅ Hello from Node.js HPA test! yangilanish 11.06.2025 15:08');
+  res.send('✅ Hello from Node.js HPA test! yangilanish 11.06.2025 15:08 test');
 });
 
 app.get('/load', (req, res) => {
